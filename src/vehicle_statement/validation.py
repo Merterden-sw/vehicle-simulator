@@ -1,6 +1,6 @@
-# src/vehicle_simulator/validation.py
+# src/vehicle_statement/validation.py
 
-from vehicle_simulator.constants import (
+from vehicle_statement.constants import (
     MAX_PERCENTAGE,
     MAX_RPM,
     MAX_SPEED,
@@ -10,7 +10,7 @@ from vehicle_simulator.constants import (
     MIN_SPEED,
     MIN_TEMPERATURE,
 )
-from vehicle_simulator.exceptions import VehicleValidationError
+from vehicle_statement.exceptions import VehicleValidationError
 
 
 def validate_speed(speed: float) -> None:
