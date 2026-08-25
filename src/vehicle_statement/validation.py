@@ -1,65 +1,58 @@
 # src/vehicle_statement/validation.py
 
 from vehicle_statement.constants import (
-    MAX_PERCENTAGE,
-    MAX_RPM,
-    MAX_SPEED,
-    MAX_TEMPERATURE,
-    MIN_PERCENTAGE,
-    MIN_RPM,
-    MIN_SPEED,
-    MIN_TEMPERATURE,
+    ENGINE_TEMP_MAX_CELSIUS,
+    ENGINE_TEMP_MIN_CELSIUS,
+    PERCENTAGE_MAX,
+    PERCENTAGE_MIN,
+    RPM_MAX,
+    RPM_MIN,
+    SPEED_MAX_KMH,
+    SPEED_MIN_KMH,
 )
 from vehicle_statement.exceptions import VehicleValidationError
 
 
 def validate_speed(speed: float) -> None:
-    """Araç hızını doğrular."""
-    if not isinstance(speed, (int, float)):
+    if not (SPEED_MIN_KMH <= speed <= SPEED_MAX_KMH):
         raise VehicleValidationError(
-            f"Geçersiz hız veri tipi: {type(speed).__name__}"
-        )
-
-    if not (MIN_SPEED <= speed <= MAX_SPEED):
-        raise VehicleValidationError(
-            f"Hız sınırı ihlali: {speed} km/h (Beklenen: [{MIN_SPEED}, {MAX_SPEED}])"
-        )
-
-
-def validate_percentage(signal_name: str, value: float) -> None:
-    """Yüzde tabanlı sinyalleri (Gaz, Fren, Depo) doğrular."""
-    if not isinstance(value, (int, float)):
-        raise VehicleValidationError(
-            f"Geçersiz '{signal_name}' veri tipi: {type(value).__name__}"
-        )
-
-    if not (MIN_PERCENTAGE <= value <= MAX_PERCENTAGE):
-        raise VehicleValidationError(
-            f"Yüzde sınırı ihlali '{signal_name}': %{value} (Beklenen: [%{MIN_PERCENTAGE}, %{MAX_PERCENTAGE}])"
-        )
-
-
-def validate_temperature(temp_c: float) -> None:
-    """Motor soğutma sıvısı sıcaklığını doğrular."""
-    if not isinstance(temp_c, (int, float)):
-        raise VehicleValidationError(
-            f"Geçersiz sıcaklık veri tipi: {type(temp_c).__name__}"
-        )
-
-    if not (MIN_TEMPERATURE <= temp_c <= MAX_TEMPERATURE):
-        raise VehicleValidationError(
-            f"Sıcaklık sınırı ihlali: {temp_c} °C (Beklenen: [{MIN_TEMPERATURE}, {MAX_TEMPERATURE}])"
+            f"Speed must be between {SPEED_MIN_KMH} and {SPEED_MAX_KMH} km/h."
         )
 
 
 def validate_rpm(rpm: float) -> None:
-    """Motor devrini doğrular."""
-    if not isinstance(rpm, (int, float)):
+    if not (RPM_MIN <= rpm <= RPM_MAX):
         raise VehicleValidationError(
-            f"Geçersiz RPM veri tipi: {type(rpm).__name__}"
+            f"RPM must be between {RPM_MIN} and {RPM_MAX}."
         )
 
-    if not (MIN_RPM <= rpm <= MAX_RPM):
+
+def validate_temperature(temp: float) -> None:
+    if not (ENGINE_TEMP_MIN_CELSIUS <= temp <= ENGINE_TEMP_MAX_CELSIUS):
         raise VehicleValidationError(
-            f"Motor devri sınırı ihlali: {rpm} RPM (Beklenen: [{MIN_RPM}, {MAX_RPM}])"
+            f"Engine temperature must be between {ENGINE_TEMP_MIN_CELSIUS} and {ENGINE_TEMP_MAX_CELSIUS} °C."
+        )
+
+
+def validate_percentage(name: str, value: float) -> None:
+    if not (PERCENTAGE_MIN <= value <= PERCENTAGE_MAX):
+        raise VehicleValidationError(
+            f"{name} must be between {PERCENTAGE_MIN} and {PERCENTAGE_MAX}%."
+        )
+
+
+def validate_signal_consistency(
+    ignition: bool, engine_state: bool, rpm: float
+) -> None:
+    """Araç sinyalleri arasındaki mantıksal tutarlılığı kontrol eder."""
+    # Kural 1: Kontak kapalıysa motor çalışamaz
+    if not ignition and engine_state:
+        raise VehicleValidationError(
+            "Engine cannot be running while ignition is OFF."
+        )
+
+    # Kural 2: Motor çalışmıyorsa devir (RPM) 0 olmalıdır
+    if not engine_state and rpm > 0.0:
+        raise VehicleValidationError(
+            "Engine RPM must be 0.0 when engine is not running."
         )
