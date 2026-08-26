@@ -1,0 +1,10 @@
+[
+  { "step": 1, "ignition": false, "accelerator": 0, "brake": false, "action": "OFF" },
+  { "step": 2, "ignition": true, "accelerator": 0, "brake": false, "action": "IGNITION_ON" },
+  { "step": 3, "ignition": true, "accelerator": 0, "brake": true, "action": "START_ENGINE" },
+  { "step": 4, "ignition": true, "accelerator": 30, "brake": false, "action": "ACCELERATE" },
+  { "step": 5, "ignition": true, "accelerator": 30, "brake": false, "action": "CRUISE" },
+  { "step": 6, "ignition": true, "accelerator": 0, "brake": true, "action": "BRAKE" },
+  { "step": 7, "ignition": true, "accelerator": 0, "brake": false, "action": "STOP" },
+  { "step": 8, "ignition": false, "accelerator": 0, "brake": false, "action": "SHUTDOWN" }
+]
